@@ -1,111 +1,123 @@
 import 'package:flutter/material.dart';
-import 'agencies_page.dart';
-import 'home_page.dart';
+
 void main() {
-  runApp(MyApp());
+  runApp(MessengerApp());
 }
 
-class MyApp extends StatelessWidget {
+class MessengerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Navigation Bar Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue, // Set the primary color to blue
-      ),
-      home: HomePage(),
+      home: ChatListScreen(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-
-  static const List<Widget> _widgetOptions = <Widget>[
-    HomePage(),
-    Text(
-      'Weather Page',
-      style: TextStyle(color: Colors.blue), // Set the text color to blue
-    ),
-    Text(
-      'Agencies Page',
-      style: TextStyle(color: Colors.blue), // Set the text color to blue
-    ),
-    Text(
-      'User Page',
-      style: TextStyle(color: Colors.blue), // Set the text color to blue
-    ),
-  ];
-
-  void _onItemTapped(int index) {
-  if (index == 2) { // Index 2 corresponds to the "Agencies" icon
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AgenciesPage()),
-    );
-  }
-    if (index == 0) {
-    // Navigate to the Home Page
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => HomePage(),
-    ));
-  }
-  else {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-}
-
-
+class ChatListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Navigation Bar'),
+        title: Text('Messenger'),
       ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+      body: ListView.builder(
+        itemCount: 5, // Replace with the actual number of chats
+        itemBuilder: (context, index) {
+          return ChatListItem();
+        },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Colors.blue, // Set the selected icon color to blue
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              color: Colors.blue, // Set the icon color to blue
+    );
+  }
+}
+
+class ChatListItem extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: CircleAvatar(
+        child: Icon(Icons.person),
+      ),
+      title: Text('Chat Title'),
+      subtitle: Text('Last message here...'),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ChatScreen()),
+        );
+      },
+    );
+  }
+}
+
+class ChatScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Chat Title'),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: 10, // Replace with actual messages
+              itemBuilder: (context, index) {
+                return MessageWidget(
+                  message: 'Message text here...',
+                  isMe: index % 2 == 0, // Alternate between sender and receiver
+                );
+              },
             ),
-            label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.cloud,
-              color: Colors.blue, // Set the icon color to blue
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Type your message...',
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: () {
+                    // Send message logic here
+                  },
+                ),
+              ],
             ),
-            label: 'Weather',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.business,
-              color: Colors.blue, // Set the icon color to blue
-            ),
-            label: 'Agencies',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-              color: Colors.blue, // Set the icon color to blue
-            ),
-            label: 'User',
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MessageWidget extends StatelessWidget {
+  final String message;
+  final bool isMe;
+
+  MessageWidget({required this.message, required this.isMe});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.all(8),
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: isMe ? Colors.blue : Colors.grey,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          message,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
